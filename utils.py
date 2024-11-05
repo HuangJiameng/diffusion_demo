@@ -1,6 +1,5 @@
 import torch
 import matplotlib.pyplot as plt
-from models import SimpleMLPAdaLN, DiT
 import yaml
 from models import DiT, SimpleMLPAdaLN
 
@@ -29,17 +28,17 @@ def build_model(model_type:str, config:dict):
     return model   
 
 def sample_and_plot(model, 
+                    diffusion, 
+                    output_dir, 
                     c = 0,
                     guidance_scale = [1.0], # if scale range if not given, use 1.0 (w/o guidance)
                     num_sample:int = 5000,
                     num_class:int = 2, 
                     gmodel = None,
-                    diffusion, 
                     ori_dist = None, 
-                    output_dir, 
-                    device,
-                    img_prefix:str="",
+                    comment:str="",
                     plot_color = "blue",
+                    device="cuda:0",
                     ):
     
     if type(guidance_scale) == float:
@@ -98,4 +97,4 @@ def sample_and_plot(model,
         plt.ylim(-4, 4)
         plt.grid(True)
         guid_type = "ag" if use_ag else "cfg"
-        plt.savefig(f"{output_dir}/{img_prefix}-{guid_type}_scale_{gs}.png")
+        plt.savefig(f"{output_dir}/{comment}-{guid_type}_scale_{gs}.png")

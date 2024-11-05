@@ -3,6 +3,7 @@ import torch
 import matplotlib.pyplot as plt
 from time import time
 from utils import sample_and_plot
+from models import DiT, SimpleMLPAdaLN
 
 class Trainer:
     def __init__(self, model, diffusion, optimizer, device, X, Y, 
@@ -35,8 +36,14 @@ class Trainer:
                 x = self.X[i:i+batch_size]  
                 y = self.Y[i:i+batch_size]
                 x = torch.tensor(x, dtype=torch.float)
-                y = torch.tensor(y, dtype=torch.float)
-                y = y.unsqueeze(1)
+                if type(self.model) == DiT:
+                    x = x.unsqueeze(2).unsqueeze(3)
+                    y = torch.tensor(y, dtype=torch.int)
+                elif type(self.model) == SimpleMLPAdaLN:
+                    y = torch.tensor(y, dtype=torch.float)
+                    y = y.unsqueeze(1)
+                else:
+                    raise NotImplementedError
                 x = x.to(self.device)
                 y = y.to(self.device)
                 t = torch.randint(0, self.diffusion.num_timesteps, (x.shape[0],), device=self.device)
@@ -53,13 +60,13 @@ class Trainer:
                 log_steps += 1
 
             if epoch % self.log_interval == 0:
-                print(loss.item())
+                # print(loss.item())
                 end_time = time()
                 sec_per_step = (end_time - start_time) / self.log_interval
                 avg_loss = torch.tensor(running_loss / log_steps, device=self.device)
                 with open(os.path.join(self.output_dir, "log.txt"), "a") as f:
                     f.write(f"(step={train_steps:07d}) Train Loss: {avg_loss:.4f}, Sec per Epoch: {sec_per_step:.4f}\n")
-                # Reset monitoring variables:
+
                 running_loss = 0
                 log_steps = 0
                 start_time = time()
@@ -68,14 +75,16 @@ class Trainer:
                 print(f"Sampling on Epoch {epoch}...")
                 sample_and_plot(model = self.model, 
                                 diffusion = self.diffusion,
+                                output_dir = self.output_dir,
                                 comment = f"Epoch{epoch}")
                 model_save_path = f"{self.output_dir}/model_{epoch}.pt"
                 torch.save(self.model.state_dict(), model_save_path)
 
         self.model.eval()
-        print(f"Sampling on Epoch {self.epochs}...")
+
         sample_and_plot(model = self.model, 
                         diffusion = self.diffusion,
+                        output_dir = self.output_dir,
                         comment = f"Epoch{self.epochs}")
-        model_save_path = f"{self.output_dir}/model_{self.epochs}.pt"
+        model_save_path = f"{self.output_dir}/model_final.pt"
         torch.save(self.model.state_dict(), model_save_path)

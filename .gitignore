@@ -1,3 +1,5 @@
 
 .DS_Store
 diffusion/__pycache__
+*outputs
+__pycache__

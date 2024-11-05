@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument("--image_path", type=str, help="Path to the input image", default="example.jpg")
     parser.add_argument("--output_dir", type=str, help="Directory to save outputs", default="./ag_demo_mlp")
     parser.add_argument("--model_type", type=str, help="Model Type", default="DiT", choices=["DiT", "SimpleMLPAdaLN"])
-    parser.add_argument("--config_path", type=str, help="Path of model config (YAML file)", default="default.yml")
+    parser.add_argument("--config_path", type=str, help="Path of model config (YAML file)", default="config/default.yml")
     parser.add_argument("--device", type=str, help="device", default="cuda:0")
     parser.add_argument("--epochs", type=int, help="Total number of training epochs", default=3000)
     parser.add_argument("--log_interval", type=int, help="Interval for logging", default=50)
@@ -50,14 +50,14 @@ def main(args):
     trainer = Trainer(model, 
                       diffusion = diffusion, 
                       optimizer = optimizer, 
-                      device, 
-                      X, 
-                      Y, 
+                      device=device, 
+                      X=X, 
+                      Y=Y, 
                       output_dir = args.output_dir, 
                       epochs = args.epochs, 
                       log_interval = args.log_interval, 
                       save_interval = args.save_interval,
-                      )
+                    )
     trainer.train()
 
     

@@ -97,5 +97,4 @@ def sample_and_plot(model,
         plt.ylim(-4, 4)
         plt.grid(True)
         guid_type = "ag" if use_ag else "cfg"
-        comment = comment + "-" if comment else ""
         plt.savefig(f"{output_dir}/{comment}{guid_type}_scale_{gs}.png")

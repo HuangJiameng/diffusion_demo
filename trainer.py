@@ -76,7 +76,7 @@ class Trainer:
                 sample_and_plot(model = self.model, 
                                 diffusion = self.diffusion,
                                 output_dir = self.output_dir,
-                                comment = f"Epoch{epoch}")
+                                comment = f"Epoch{epoch}-")
                 model_save_path = f"{self.output_dir}/model_{epoch}.pt"
                 torch.save(self.model.state_dict(), model_save_path)
 
@@ -85,6 +85,6 @@ class Trainer:
         sample_and_plot(model = self.model, 
                         diffusion = self.diffusion,
                         output_dir = self.output_dir,
-                        comment = f"Epoch{self.epochs}")
+                        comment = f"Epoch{self.epochs}-")
         model_save_path = f"{self.output_dir}/model_final.pt"
         torch.save(self.model.state_dict(), model_save_path)

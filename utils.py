@@ -36,7 +36,7 @@ def sample_and_plot(model,
                     num_class:int = 2, 
                     gmodel = None,
                     ori_dist = None, 
-                    comment:str="",
+                    comment = None,
                     plot_color = "blue",
                     device="cuda:0",
                     ):
@@ -62,7 +62,7 @@ def sample_and_plot(model,
             raise NotImplementedError
         
         if use_ag:
-            model_kwargs = dict(y=y, y_null=y_null, gs=gs, model_guide=gmodel)
+            model_kwargs = dict(y=y, y_null=y_null, ag_scale=gs, model_guide=gmodel)
             forward_func = model.forward_with_ag
         else:
             z = torch.cat([z, z], 0)
@@ -97,4 +97,5 @@ def sample_and_plot(model,
         plt.ylim(-4, 4)
         plt.grid(True)
         guid_type = "ag" if use_ag else "cfg"
-        plt.savefig(f"{output_dir}/{comment}-{guid_type}_scale_{gs}.png")
+        comment = comment + "-" if comment else ""
+        plt.savefig(f"{output_dir}/{comment}{guid_type}_scale_{gs}.png")

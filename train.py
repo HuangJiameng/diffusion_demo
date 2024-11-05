@@ -14,11 +14,15 @@ import yaml
 
 # 设置命令行参数解析
 def parse_args():
-    parser = argparse.ArgumentParser(description="Image Processing and Training Script")
+    parser = argparse.ArgumentParser(
+        description="Training a simple diffusion",
+        epilog="Example command: python train.py --image_path 'path/to/image.jpg' --output_dir './outputs' --model_type 'DiT' --config_path 'config/config.yml' --epochs 3000 --log_interval 50 --save_interval 300"
+    )
     parser.add_argument("--image_path", type=str, help="Path to the input image", default="example.jpg")
     parser.add_argument("--output_dir", type=str, help="Directory to save outputs", default="./ag_demo_mlp")
-    parser.add_argument("--model_type", type=str, help="Model Type", default="DiT")
-    parser.add_argument("--config_path", type=str, help="Model Type", default="default.yml")
+    parser.add_argument("--model_type", type=str, help="Model Type", default="DiT", choices=["DiT", "SimpleMLPAdaLN"])
+    parser.add_argument("--config_path", type=str, help="Path of model config (YAML file)", default="default.yml")
+    parser.add_argument("--device", type=str, help="device", default="cuda:0")
     parser.add_argument("--epochs", type=int, help="Total number of training epochs", default=3000)
     parser.add_argument("--log_interval", type=int, help="Interval for logging", default=50)
     parser.add_argument("--save_interval", type=int, help="Interval for saving model checkpoints", default=300)
@@ -33,7 +37,7 @@ def main(args):
     image_processor = ImageProcessor()
     X, Y = image_processor.get_dataset(args.image_path)
 
-    device = torch.device("cuda:1")
+    device = torch.device(args.device) 
 
     with open(args.config_path, 'r') as file:
         config = yaml.safe_load(file)
